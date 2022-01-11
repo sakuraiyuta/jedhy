@@ -2,14 +2,14 @@
 
 ;; * Imports
 
-(require [hy.extra.anaphoric [*]])
+(require hyrule.hy_init *)
 
 (import functools
         itertools
-        [toolz.curried :as tz]
+        toolz.curried :as tz
 
-        [hy.lex [unmangle
-                 mangle :as unfixed-mangle]])
+        hy.lex [unmangle
+                mangle :as unfixed-mangle])
 
 
 ;; * 1.0a3 workaround

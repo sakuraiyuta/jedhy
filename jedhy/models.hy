@@ -2,8 +2,9 @@
 
 ;; * Imports
 
-(require [jedhy.macros [*]])
-(import [jedhy.macros [*]])
+(require jedhy.macros *)
+(require hyrule.hy_init *)
+(import jedhy.macros *)
 (import builtins
 
         hy
@@ -12,16 +13,16 @@
         ;; [hy.compiler [_special_form_compilers :as -compile-table]]
 
         ;; Below imports populate __macros__ for Namespace
-        [hy.core.language [*]]
-        [hy.core.macros [*]])
+        hyrule.hy_init *
+        hy.core.macros *)
 
 ;; * Fixes
 
 ;; See this issue for below #1467: https://github.com/hylang/hy/issues/1467
 (hy.eval `(import hy.macros))
-(hy.eval `(require [hy.extra.anaphoric [*]]))
+(hy.eval `(require hyrule.hy_init *))
 ;; Overwrite Hy's mangling
-(import [jedhy.macros [mangle]])
+(import jedhy.macros [mangle])
 
 ;; * Namespace
 
@@ -32,7 +33,7 @@
     (setv self.locals        (or locals- (locals)))
     (setv self.macros        (tz.keymap unmangle (or macros- __macros__)))
     ;; (setv self.compile-table (self.-collect-compile-table))
-    (setv self.shadows       (self.-collect-shadows))
+    ;; (setv self.shadows       (self.-collect-shadows))
 
     ;; Collected
     (setv self.names (self.-collect-names)))
@@ -49,12 +50,12 @@
     (->> -compile-table
        (tz.keymap self.-to-names)))
 
-  (defn -collect-shadows [self]
-    "Collect shadows as a list, purely for annotation checks."
-    (->> hy.core.shadow
-      dir
-      (map self.-to-names)
-      tuple))
+  ;; (defn -collect-shadows [self]
+  ;;   "Collect shadows as a list, purely for annotation checks."
+  ;;   (->> hy.core.shadow
+  ;;     dir
+  ;;     (map self.-to-names)
+  ;;     tuple))
 
   (defn -collect-names [self]
     "Collect all names from all places."
@@ -156,8 +157,8 @@
     (setv obj? (not (is obj None)))  ; Obj could be instance of bool
 
     ;; Shadowed takes first priority but compile table takes last priority
-    (setv annotation (cond [(self.shadow?)
-                            "shadowed"]
+    (setv annotation (cond ;; [(self.shadow?)
+                           ;;  "shadowed"]
 
                            [obj?
                             (self.-translate-class obj.__class__.__name__)]

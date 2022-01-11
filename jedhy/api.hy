@@ -2,13 +2,13 @@
 
 ;; * Imports
 
-(require [jedhy.macros [*]])
-(import [jedhy.macros [*]])
+(require jedhy.macros *)
+(import jedhy.macros *)
 
-(import [jedhy.inspection [Inspect]]
-        [jedhy.models [Candidate
-                       Namespace
-                       Prefix]])
+(import jedhy.inspection [Inspect]
+        jedhy.models [Candidate
+                      Namespace
+                      Prefix])
 
 ;; * API
 
@@ -38,15 +38,15 @@ Typically, the values passed are:
   (defn annotate [self candidate-str]
     "Annotate a candidate string."
     (-> candidate-str
-      (Candidate :namespace self.namespace)
-      (.annotate)))
+        (Candidate :namespace self.namespace)
+        (.annotate)))
 
   (defn -inspect [self candidate-str]
     "Inspect a candidate string."
     (-> candidate-str
-       (Candidate :namespace self.namespace)
-       (.get-obj)
-       Inspect))
+        (Candidate :namespace self.namespace)
+        (.get-obj)
+        Inspect))
 
   (defn docs [self candidate-str]
     "Docstring for a candidate string."

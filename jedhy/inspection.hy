@@ -2,8 +2,8 @@
 
 ;; * Imports
 
-(require [jedhy.macros [*]])
-(import [jedhy.macros [*]])
+(require jedhy.macros *)
+(import jedhy.macros *)
 
 (import inspect
         hy)

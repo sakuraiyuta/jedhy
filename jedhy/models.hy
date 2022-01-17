@@ -5,6 +5,7 @@
 (require jedhy.macros *)
 (require hyrule.hy_init *)
 (import jedhy.macros *)
+(import hy [read-str])
 (import builtins
 
         hy

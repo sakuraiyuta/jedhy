@@ -2,7 +2,7 @@
 
 ;; * Imports
 
-(require jedhy.macros *)
+(require jedhy.macros * :readers *)
 (import jedhy.macros *)
 
 (import jedhy.inspection [Inspect]

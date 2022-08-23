@@ -3,13 +3,15 @@
 ;; * Imports
 
 (require hyrule.hy_init *)
+(require hyrule * :readers *)
 
 (import functools
         itertools
         toolz.curried :as tz
 
-        hy.lex [unmangle
-                mangle :as unfixed-mangle])
+        hy [unmangle
+                mangle :as unfixed-mangle]
+        )
 
 
 ;; * 1.0a3 workaround
@@ -17,7 +19,7 @@
   (get form 1))
 
 (defn first [form]
-  (if form (get form 0)))
+  (when form (get form 0)))
 
 (defn none? [form]
   (is form None))
@@ -33,26 +35,29 @@
 
 ;; * Tag Macros
 
-(defmacro "#t" [form]
+(defreader t
   "Cast evaluated form to a tuple. Useful via eg. #t(-> x f1 f2 ...)."
-  `(tuple ~form))
+  (let [form (.parse-one-form &reader)]
+    `(tuple ~form)))
 
-(defmacro "#$" [form]
+(defreader $
   "Partially apply a form eg. (#$(map inc) [1 2 3])."
-  `(functools.partial ~@form))
+  (let [form (.parse-one-form &reader)]
+    `(functools.partial ~@form)))
 
-(defmacro "#f" [form]
+(defreader f
   "Flipped #$."
-  `(tz.flip ~@form))
+  (let [form (.parse-one-form &reader)]
+    `(tz.flip ~@form)))
 
 ;; * Misc
 
-(defn -allkeys [d * [parents (,)]]
+(defn -allkeys [d * [parents #()]]
   "In-order tuples of keys of nested, variable-length dict."
-  (if (isinstance d (, list tuple))
+  (if (isinstance d #(list tuple))
       []
       #t(->> d
-         (tz.keymap (fn [k] (+ parents (, k))))
+         (tz.keymap (fn [k] (+ parents #(k))))
          dict.items
          (itertools.starmap
            (fn [k v]
@@ -78,7 +83,7 @@
 
 (defn juxt [f #* fs]
   "Return a function applying each `fs` to args, collecting results in a list."
-  (setv fs (+ (, f) fs))
+  (setv fs (+ #(f) fs))
   (fn [#* args #** kwargs]
     (lfor f fs (f #* args #** kwargs))))
 

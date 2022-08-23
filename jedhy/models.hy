@@ -2,10 +2,11 @@
 
 ;; * Imports
 
-(require jedhy.macros *)
+(require jedhy.macros * :readers *)
 (require hyrule.hy_init *)
+(require hyrule * :readers *)
 (import jedhy.macros *)
-(import hy [read-str])
+(import hy [read])
 (import builtins
 
         hy
@@ -39,12 +40,11 @@
     ;; Collected
     (setv self.names (self.-collect-names)))
 
-  #@(staticmethod
-      (defn -to-names [key]
+(defn [staticmethod] -to-names [key]
         "Function for converting keys (strs, functions, modules...) to names."
         (unmangle (if (string? key)
                       key
-                      key.__name__))))
+                      key.__name__)))
 
   (defn -collect-compile-table [self]
     "Collect compile table as dict."
@@ -76,7 +76,7 @@
     (when (not mangled-symbol)
       (return None))
 
-    (setv hy-tree (read-str mangled-symbol))
+    (setv hy-tree (read mangled-symbol))
 
     (try (hy.eval hy-tree :locals self.globals)
          (except [e NameError]
@@ -140,17 +140,16 @@
     (when obj
       (->> obj dir (map unmangle) tuple)))
 
-  #@(staticmethod
-      (defn -translate-class [klass]
-        "Return annotation given a name of a class."
-        (cond [(in klass ["function" "builtin_function_or_method"])
-               "def"]
-              [(= klass "type")
-               "class"]
-              [(= klass "module")
-               "module"]
-              [True
-               "instance"])))
+  (defn [staticmethod] -translate-class [klass]
+    "Return annotation given a name of a class."
+    (cond [(in klass ["function" "builtin_function_or_method"])
+           "def"]
+          [(= klass "type")
+           "class"]
+          [(= klass "module")
+           "module"]
+          [True
+           "instance"]))
 
   (defn annotate [self]
     "Return annotation for a candidate."
@@ -189,31 +188,27 @@
   (defn __repr__ [self]
     (.format "Prefix<(prefix={})>" self.prefix))
 
-  #@(staticmethod
-      (defn -prefix->candidate [prefix namespace]
-        (->> (.split prefix ".")
-             butlast
-             (.join ".")
-             (Candidate :namespace namespace))))
+  (defn [staticmethod] -prefix->candidate [prefix namespace]
+    (->> (.split prefix ".")
+         butlast
+         (.join ".")
+         (Candidate :namespace namespace)))
 
-  #@(staticmethod
-      (defn -prefix->attr-prefix [prefix]
-        "Get prefix as str of everything after last dot if a dot is there."
-        (->> (.split prefix ".")
-           last
-           unmangle
-           ;; TODO since 0.15 below line shouldnt be needed
-           (#%(if (= %1 "_") "-" %1)))))
+  (defn [staticmethod] -prefix->attr-prefix [prefix]
+    "Get prefix as str of everything after last dot if a dot is there."
+    (->> (.split prefix ".")
+         last
+         unmangle
+         ;; TODO since 0.15 below line shouldnt be needed
+         (#%(if (= %1 "_") "-" %1))))
 
-  #@(property
-      (defn has-attr? [self]
-        "Does prefix reference an attr?"
-        (in "." self.prefix)))
+  (defn [property] has-attr? [self]
+    "Does prefix reference an attr?"
+    (in "." self.prefix))
 
-  #@(property
-      (defn obj? [self]
-        "Is the prefix's candidate an object?"
-        (bool (.get-obj self.candidate))))
+  (defn [property] obj? [self]
+    "Is the prefix's candidate an object?"
+    (bool (.get-obj self.candidate)))
 
   (defn complete-candidate [self completion]
     "Given a potential string `completion`, attach to candidate."

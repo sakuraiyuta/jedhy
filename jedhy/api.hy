@@ -9,13 +9,21 @@
         jedhy.models [Candidate
                       Namespace
                       Prefix])
+(import jedhy.logger [Logger])
 
 ;; * API
 
 (defclass API [object]
-  (defn __init__ [self [globals- None] [locals- None] [macros- None]]
+  (defn __init__
+    [self [globals- None] [locals- None] [macros- None] [logger None]]
+    (if logger
+      (setv Logger.instance logger)
+      (do
+        (import logging)
+        (setv Logger.instance (logging.getLogger "jedhy"))))
     (self.set-namespace globals- locals- macros-)
 
+    (setv self.logger logger)
     (setv self.-cached-prefix None))
 
   (defn set-namespace [self [globals- None] [locals- None] [macros- None]]

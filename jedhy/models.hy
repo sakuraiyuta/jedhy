@@ -6,6 +6,7 @@
 (require hyrule.hy_init *)
 (require hyrule * :readers *)
 (import jedhy.macros *)
+(import jedhy.logger [Logger])
 (import hy [read])
 (import builtins
 
@@ -40,11 +41,11 @@
     ;; Collected
     (setv self.names (self.-collect-names)))
 
-(defn [staticmethod] -to-names [key]
-        "Function for converting keys (strs, functions, modules...) to names."
-        (unmangle (if (string? key)
-                      key
-                      key.__name__)))
+  (defn [staticmethod] -to-names [key]
+    "Function for converting keys (strs, functions, modules...) to names."
+    (unmangle (if (string? key)
+                key
+                key.__name__)))
 
   (defn -collect-compile-table [self]
     "Collect compile table as dict."
@@ -117,7 +118,10 @@
   (defn evaled? [self]
     "Is candidate evaluatable and return it."
     (try (.eval self.namespace self.symbol)
-         (except [e Exception] None)))
+         (except [e Exception]
+                 (Logger.instance.exception
+                   (+ "Candidate.evaled? throws error."
+                      " meeesage=" (str e))))))
 
   (defn shadow? [self]
     "Is candidate a shadowed operator, do *not* return it."
@@ -198,9 +202,7 @@
     "Get prefix as str of everything after last dot if a dot is there."
     (->> (.split prefix ".")
          last
-         unmangle
-         ;; TODO since 0.15 below line shouldnt be needed
-         (#%(if (= %1 "_") "-" %1))))
+         unmangle))
 
   (defn [property] has-attr? [self]
     "Does prefix reference an attr?"

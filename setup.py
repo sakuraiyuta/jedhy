@@ -1,13 +1,12 @@
 # import hy
-from setuptools import find_packages, setup
-from setuptools.command.install import install
+from setuptools import setup
 
 __AUTHOR__ = 'Eric Kaschalk'
 __AUTHOR_EMAIL__ = 'ekaschalk@gmail.com'
 
 
 setup(name='jedhy',
-      version=1,
+      version=1.1,
       description='Autocompletion and introspection tools for Hy.',
       author=__AUTHOR__,
       author_email=__AUTHOR_EMAIL__,
@@ -22,6 +21,6 @@ setup(name='jedhy',
           'jedhy': ['*.hy', '__pycache__/*'],
       },
 
-      install_requires=["toolz"],
+      install_requires=["toolz", "hyrule"],
       # include_package_data=True,
       )

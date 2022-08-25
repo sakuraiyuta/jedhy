@@ -5,8 +5,10 @@
 (require hyrule * :readers *)
 (require jedhy.macros * :readers *)
 (import jedhy.macros *)
+(import hyrule *)
 (import hyrule.iterables *)
 (import hy.pyops *)
+(import toolz.functoolz [compose :as comp])
 (import inspect)
 
 ;; * Parameters

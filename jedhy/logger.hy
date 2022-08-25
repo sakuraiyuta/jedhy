@@ -1,0 +1,2 @@
+;; * Logger
+(defclass Logger [object])
